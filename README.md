@@ -1,15 +1,7 @@
-# 📝 Todo App (Next.js + TypeScript + Tailwind v4)
+# 📝 TaskForge - Next.js implementation
 
-A fast, modern, and responsive Todo List application built with Next.js (TypeScript), Tailwind CSS v4, and shadcn/ui, featuring offline persistence via Dexie.js (IndexedDB) and React Query for data synchronization.
+A fast, modern, and responsive TaskForge application built with Next.js (TypeScript), Tailwind CSS v4, and shadcn/ui, featuring offline persistence via Dexie.js (IndexedDB) and React Query for data synchronization.
 The app supports searching, filtering, editing, deleting, pagination, and detailed todo pages — all within a clean, accessible UI.
-
-Note: This is the Next.js version of the Todo App.
-
-Current Branch (nextjs-version) → Built with Next.js + TypeScript + Tailwind CSS v4 + shadcn/ui
-
-Previous Branch (typescript-version) → Built with React + Vite + TypeScript
-
-You can explore the previous TypeScript version here: [TypeScript-Version](https://github.com/ibeO-GH/Todo-app-react/tree/typescript-version)
 
 ---
 
@@ -31,8 +23,8 @@ You can explore the previous TypeScript version here: [TypeScript-Version](https
 
 ### 1. Clone the Repository
 
-git clone https://github.com/ibeO-GH/Todo-app-react.git
-cd todo-app-react
+git clone https://github.com/ibeO-GH/taskforge-next.git
+cd taskforge-next
 
 ### 2. Install Dependencies
 
@@ -175,27 +167,11 @@ src/
 
 ### Hosted on Vercel
 
-https://todo-app-nextjs-steel.vercel.app/
-
 ---
 
 ## Acknowledgments
 
-Special thanks to:
-
-- Next.js Team
-
-- shadcn/ui
-
-- React Query
-
-- Dexie.js
-
-- Tailwind CSS
-
-- Radix UI
-
-## Hosted Link -
+Next.js Team, shadcn/ui, React Query, Dexie.js, Tailwind CSS, Radix UI
 
 ---
 
@@ -223,4 +199,16 @@ Key Changes
 
 * Styling: (React + Vite) - Tailwind v4, (Next.js Version) - Tailwind v4 (identical config).
 
-All core logic, UI, pagination, and CRUD behaviors remain exactly the same as the TypeScript version — just restructured for Next.js’s App Router.
+All core logic, UI, pagination, and CRUD behaviors remain exactly the same as the React version — just restructured for Next.js’s App Router.
+
+---
+
+## 🌐 Part of TaskForge Ecosystem
+
+This project is part of the **TaskForge** system.
+
+Explore other implementations:
+
+- Core → https://github.com/ibeO-GH/taskforge
+- React → https://github.com/ibeO-GH/taskforge-react
+- Vue → https://github.com/ibeO-GH/taskforge-vue
