@@ -5,7 +5,7 @@ import "@/styles/globals.css";
 
 export const metadata = {
   title: "TaskForge - Next.js",
-  description: "TaskForge Next.js implementation",
+  description: "Next.js implementation of TaskForge",
 };
 
 export default function RootLayout({

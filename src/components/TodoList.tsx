@@ -1,9 +1,8 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
-
+import { getTodos, saveTodos } from "@/utils/localTodos";
 import TodoForm from "./TodoForm";
-import { db } from "../db/todoDb";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import {
@@ -28,7 +27,7 @@ export default function TodoList(): React.JSX.Element {
   const [showCreate, setShowCreate] = useState<boolean>(false);
   const [editingTodo, setEditingTodo] = useState<Todo | null>(null);
   const [deleteConfirmTodoId, setDeleteConfirmTodoId] = useState<number | null>(
-    null
+    null,
   );
 
   // Query for todos
@@ -39,25 +38,17 @@ export default function TodoList(): React.JSX.Element {
   } = useQuery<Todo[]>({
     queryKey: ["todos"],
     queryFn: async () => {
-      const count = await db.todos.count();
-
-      if (count === 0) {
+      const existing = getTodos();
+      if (existing.length === 0) {
         const response = await fetch(
-          "https://jsonplaceholder.typicode.com/todos?_limit=30"
+          "https://jsonplaceholder.typicode.com/todos?_limit=30",
         );
         const todosFromApi: Todo[] = await response.json();
 
-        const todosToAdd = todosFromApi.map(({ id, title, completed }) => ({
-          id,
-          title,
-          completed,
-        }));
-
-        await db.todos.bulkAdd(todosToAdd);
+        saveTodos(todosFromApi);
+        return todosFromApi;
       }
-
-      const allTodos = await db.todos.toArray();
-      return allTodos.sort((a, b) => b.id - a.id);
+      return existing;
     },
   });
 
@@ -66,37 +57,30 @@ export default function TodoList(): React.JSX.Element {
     mutationFn: async (newTodo: Omit<Todo, "id">) => {
       const id = Date.now();
       const todo: Todo = { ...newTodo, id };
-      await db.todos.put(todo);
+      const existing = getTodos();
+      const updated = [...existing, todo];
+      saveTodos(updated);
       return todo;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["todos"] });
-      setCurrentPage(1);
-      setShowCreate(false);
     },
   });
 
   // Delete Todo
   const deleteTodo = useMutation({
     mutationFn: async (id: number) => {
-      await db.todos.delete(id);
+      const existing = getTodos();
+      const updated = existing.filter((t: Todo) => t.id !== id);
+      saveTodos(updated);
       return id;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["todos"] });
-      setDeleteConfirmTodoId(null);
     },
   });
 
   // Update Todo
   const updateTodo = useMutation({
     mutationFn: async (data: Todo) => {
-      await db.todos.update(data.id, data);
+      const existing = getTodos();
+      const updated = existing.map((t: Todo) => (t.id === data.id ? data : t));
+      saveTodos(updated);
       return data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["todos"] });
-      setEditingTodo(null);
     },
   });
 
@@ -111,8 +95,8 @@ export default function TodoList(): React.JSX.Element {
       statusFilter === "all"
         ? true
         : statusFilter === "completed"
-        ? todo.completed
-        : !todo.completed;
+          ? todo.completed
+          : !todo.completed;
 
     return matchesSearch && matchesStatus;
   });
@@ -120,7 +104,7 @@ export default function TodoList(): React.JSX.Element {
   const totalPages = Math.ceil(filteredTodos.length / todosPerPage);
   const paginatedTodos = filteredTodos.slice(
     (currentPage - 1) * todosPerPage,
-    currentPage * todosPerPage
+    currentPage * todosPerPage,
   );
 
   // Loading / Error states
@@ -239,7 +223,7 @@ export default function TodoList(): React.JSX.Element {
                 <Button
                   onClick={() =>
                     setDeleteConfirmTodoId(
-                      deleteConfirmTodoId === todo.id ? null : todo.id
+                      deleteConfirmTodoId === todo.id ? null : todo.id,
                     )
                   }
                   className="bg-red-500 hover:bg-red-600 text-white px-3 py-1.5 rounded-md text-sm shadow-sm cursor-pointer"
@@ -304,7 +288,7 @@ export default function TodoList(): React.JSX.Element {
               totalPages <= 5 ||
               Math.abs(page - currentPage) <= 2 ||
               page === 1 ||
-              page === totalPages
+              page === totalPages,
           )
           .map((page, idx, arr) => {
             const isEllipsis = idx > 0 && page > arr[idx - 1] + 1;

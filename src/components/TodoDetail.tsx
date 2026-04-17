@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { db } from "@/db/todoDb";
+import { getTodos } from "@/utils/localTodos";
 import { Button } from "@/components/ui/button";
 import type { Todo } from "@/types/todo";
 
@@ -12,22 +12,17 @@ interface TodoDetailProps {
 const fetchTodo = async (id: string): Promise<Todo> => {
   const numericId = Number(id);
 
-  // Try getting from IndexedDB
-  let todo = await db.todos.get(numericId);
+  const todos = getTodos();
+  const found = todos.find((t: Todo) => t.id === numericId);
+  if (found) return found;
 
-  // If not found, fetch from JSONPlaceholder
-  if (!todo) {
-    const res = await fetch(
-      `https://jsonplaceholder.typicode.com/todos/${numericId}`
-    );
-    if (!res.ok) {
-      throw new Error("Failed to fetch todo");
-    }
-    const fetchedTodo: Todo = await res.json();
-    todo = fetchedTodo;
+  const res = await fetch(
+    `https://jsonplaceholder.typicode.com/todos/${numericId}`,
+  );
+  if (!res.ok) {
+    throw new Error("Failed to fetch todo");
   }
-
-  return todo as Todo; // ensures the return type is always Todo
+  return await res.json();
 };
 
 export default function TodoDetail({ id }: TodoDetailProps) {
