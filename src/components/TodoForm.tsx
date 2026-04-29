@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState } from "react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
@@ -16,7 +18,7 @@ export default function TodoForm({
 }: TodoFormProps) {
   const [title, setTitle] = useState(initialTodo.title || "");
   const [completed, setCompleted] = useState<boolean>(
-    initialTodo.completed || false
+    initialTodo.completed || false,
   );
 
   return (
